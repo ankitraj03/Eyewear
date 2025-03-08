@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-function Header() {
-  const [username, setUsername] = useState("");
+function Header({ globalUsername, setGlobalUsername }) {
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUsername(storedUser);
+    if (globalUsername) {
       setSignedIn(true);
+    } else {
+      setSignedIn(false);
     }
-  }, []);
+  }, [globalUsername]);
 
   const handleSignOut = () => {
     localStorage.removeItem("user");
-    setUsername("");
+    setGlobalUsername(""); // ✅ Clears username globally
     setSignedIn(false);
   };
 
@@ -31,17 +30,18 @@ function Header() {
         <button className="px-4 py-2 text-black rounded-lg hover:bg-gray-300 transition duration-300">
           Track Order
         </button>
-        <button className="px-4 py-2 text-black rounded-lg hover:bg-gray-300 transition duration-300">
-          WishList
-        </button>
+        <Link to="/Wishlist">
+          <button className="px-4 py-2 text-black rounded-lg hover:bg-gray-300 transition duration-300">
+            Wishlist
+          </button>
+        </Link>
         <button className="px-4 py-2 text-black rounded-lg hover:bg-gray-300 transition duration-300">
           Cart
         </button>
-
         {signedIn ? (
           <div className="flex items-center space-x-4">
             <span className="px-4 py-2 bg-gray-300 text-black rounded-lg">
-              {username}
+              {globalUsername}
             </span>
             <button
               onClick={handleSignOut}

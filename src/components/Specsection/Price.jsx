@@ -1,25 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import image from "./Specsimg/side.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as faSolidHeart } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faRegularHeart } from "@fortawesome/free-regular-svg-icons";
-import Wishlist from "../Wishlist/Wishlist";
 
-function Price({ title, price, original }) {
-  const [openSection, setOpenSection] = useState(null);
+function Price({ globalUsername, title, price, original }) {
+  const [wishlist, setWishlist] = useState([]);
 
-  const toggleSection = (section) => {
-    setOpenSection(openSection === section ? null : section);
+  useEffect(() => {
+    if (globalUsername) {
+      const userWishlistKey = `wishlist_${globalUsername}`;
+      const storedWishlist = JSON.parse(localStorage.getItem(userWishlistKey)) || [];
+      setWishlist(storedWishlist);
+    }
+  }, [globalUsername]);
+
+  const toggleWishlist = () => {
+    if (!globalUsername) {
+      alert("Please log in to add items to your wishlist.");
+      return;
+    }
+
+    const userWishlistKey = `wishlist_${globalUsername}`;
+    let storedWishlist = JSON.parse(localStorage.getItem(userWishlistKey)) || [];
+    const item = { title, price, original, image };
+
+    if (storedWishlist.some((w) => w.title === title)) {
+      storedWishlist = storedWishlist.filter((w) => w.title !== title);
+    } else {
+      storedWishlist.push(item);
+    }
+
+    localStorage.setItem(userWishlistKey, JSON.stringify(storedWishlist));
+    setWishlist(storedWishlist);
   };
-
-  const [isLiked, setIsLiked] = useState(false);
-
-  const sections = [
-    { title: "Technical Information", content: "Technical details about the product." },
-    { title: "Visit Nearby Store", content: "Locate stores near your area." },
-    { title: "Check Delivery Options", content: "Delivery options available for your location." },
-    { title: "Review (516)", content: "View reviews and ratings for this product." },
-  ];
 
   return (
     <div className="m-10 ml-2 flex flex-col items-center md:flex-row md:justify-between">
@@ -32,32 +46,14 @@ function Price({ title, price, original }) {
           </div>
           <div>
             <FontAwesomeIcon
-              icon={isLiked ? faSolidHeart : faRegularHeart}
+              icon={wishlist.some((w) => w.title === title) ? faSolidHeart : faRegularHeart}
               className="text-3xl hover:text-red-600 cursor-pointer"
-              onClick={() => setIsLiked(!isLiked)}
-
+              onClick={toggleWishlist}
             />
           </div>
         </div>
         <div className="mb-6 flex justify-start">
           <img src={image} alt="Specs" className="w-80 rounded-lg shadow-lg" />
-          <div className="md:w-1/3 mt-10 md:mt-0 ml-10">
-            {sections.map((section, index) => (
-              <div
-                key={index}
-                className="border-b border-gray-300 py-4 cursor-pointer"
-                onClick={() => toggleSection(index)}
-              >
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium">{section.title}</span>
-                  <span>{openSection === index ? "-" : "+"}</span>
-                </div>
-                {openSection === index && (
-                  <div className="mt-2 text-sm text-gray-600">{section.content}</div>
-                )}
-              </div>
-            ))}
-          </div>
         </div>
         <div className="flex space-x-4">
           <button className="bg-[#ed824c] text-white w-[200px] p-4 rounded-xl hover:bg-[#f2702e] transition-all">

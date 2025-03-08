@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import Specimgsec from './Specimgsec';
+// import Specimgsec from './Specimgsec';
 import Price from './Price';
 import useFetchData from '../../hooks/useFetchData';
 
@@ -11,7 +11,7 @@ function Specdatails() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
-  // Filter the product by ID
+
   const filteredProducts = id
     ? data.filter(
         (product) =>
@@ -20,7 +20,6 @@ function Specdatails() {
       )
     : [];
 
-  // Get the first product (if any)
   const product = filteredProducts[0];
 
   if (!product) {
@@ -30,7 +29,7 @@ function Specdatails() {
   return (
     <>
       <div className="flex justify-left p-3">
-        <Specimgsec initialImage={product["Front View"]} />
+        {/* <Specimgsec initialImage={product["Front View"]} /> */}
         <Price
           title={product["Product Name"]}
           price={product["Discounted Price (₹)"]}
